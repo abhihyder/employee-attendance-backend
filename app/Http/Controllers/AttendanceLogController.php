@@ -7,8 +7,10 @@ use App\Services\AttendanceLogService;
 use App\Http\Controllers\Controller;
 use App\Utilities\SettingConstant;
 use App\Http\Resources\AttentanceLogResource;
+use App\Mail\AttendanceMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AttendanceLogController extends Controller
 {
@@ -65,6 +67,8 @@ class AttendanceLogController extends Controller
             DB::beginTransaction();
             $attendanceLog = $this->attendanceLogService->checkIn($employee);
             DB::commit();
+            $manager = getManagerInfo($attendanceLog);
+            Mail::to($manager->user->email)->send(new AttendanceMail($attendanceLog));
             return $this->successReponseWithData('You have checked-in successfully!', $attendanceLog);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -92,6 +96,8 @@ class AttendanceLogController extends Controller
             DB::beginTransaction();
             $attendanceLog = $this->attendanceLogService->checkOut($employee);
             DB::commit();
+            $manager = getManagerInfo($attendanceLog);
+            Mail::to($manager->user->email)->send(new AttendanceMail($attendanceLog));
             return $this->successReponseWithData('You have checked-out successfully!', $attendanceLog);
         } catch (\Exception $e) {
             DB::rollBack();
