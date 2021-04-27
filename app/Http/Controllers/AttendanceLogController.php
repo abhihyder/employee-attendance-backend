@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AttendanceLog;
 use App\Services\AttendanceLogService;
 use App\Http\Controllers\Controller;
+use App\Utilities\SettingConstant;
 use App\Http\Resources\AttentanceLogResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +25,7 @@ class AttendanceLogController extends Controller
      */
     public function index()
     {
-        // return  AttentanceLogResource::collection(AttendanceLog::all());
-        return getEmployeeByUser();
+        return  AttentanceLogResource::collection(AttendanceLog::all());
     }
 
     /**
@@ -44,37 +44,58 @@ class AttendanceLogController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function storeChechIn(Request $request)
     {
         try {
 
-            $validate = $this->attendanceLogService->storeValidation($request);
+            $checkinTime = $this->attendanceLogService->checkinTimeValidation();;
 
-            if ($validate->fails()) {
-                return response()->json([
-                    'error' => [
-                        'message' => 'Validation errors!',
-                        'errors' => $validate->errors()
-                    ]
-                ]);
+            if ($checkinTime === false) {
+
+                return $this->errorReponse('You can not check-in before ' . date('h:i a', strtotime(SettingConstant::CHECK_IN_TIME)));
+            }
+
+            $employee = getEmployeeByUser();
+            $checkedInOrNot = $this->attendanceLogService->checkedInOrNot($employee);
+
+            if ($checkedInOrNot === true) {
+                return $this->errorReponse('Already you have checked-in for today!');
             }
 
             DB::beginTransaction();
-            $employee = $this->attendanceLogService->storeData($request);
+            $attendanceLog = $this->attendanceLogService->checkIn($employee);
             DB::commit();
-            return response()->json([
-                'success' => [
-                    'message' => 'Employee Created Successfully!',
-                    'data' => $employee
-                ]
-            ]);
+            return $this->successReponseWithData('You have checked-in successfully!', $attendanceLog);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error' => [
-                    'message' => 'Something went wrong!',
-                ]
-            ]);;
+            return $this->errorReponse('Something went wrong!');
+        }
+    }
+
+    public function storeChechOut(Request $request)
+    {
+        try {
+
+            $employee = getEmployeeByUser();
+            $checkedInOrNot = $this->attendanceLogService->checkedInOrNot($employee);
+
+            if ($checkedInOrNot === false) {
+                return $this->errorReponse('You have not checked-in yet today! Please check-in first.');
+            }
+
+            $checkedOutOrNot = $this->attendanceLogService->checkedOutOrNot($employee);
+
+            if ($checkedOutOrNot === true) {
+                return $this->errorReponse('You have done for today! Please check-in first on next day.');
+            }
+
+            DB::beginTransaction();
+            $attendanceLog = $this->attendanceLogService->checkOut($employee);
+            DB::commit();
+            return $this->successReponseWithData('You have checked-out successfully!', $attendanceLog);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorReponse('Something went wrong!');
         }
     }
 

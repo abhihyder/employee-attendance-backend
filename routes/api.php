@@ -15,5 +15,6 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 
 Route::group(['middleware' => 'jwt_auth',], function ($router) {
     Route::apiResource('/employee', 'EmployeeController');
-    Route::apiResource('/attendance', 'AttendanceLogController');
+    Route::post('/attendance/checkin', 'AttendanceLogController@storeChechIn');
+    Route::post('/attendance/checkout', 'AttendanceLogController@storeChechOut');
 });
