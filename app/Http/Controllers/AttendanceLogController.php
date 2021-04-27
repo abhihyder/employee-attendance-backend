@@ -67,7 +67,7 @@ class AttendanceLogController extends Controller
             DB::beginTransaction();
             $attendanceLog = $this->attendanceLogService->checkIn($employee);
             DB::commit();
-            $manager = getManagerInfo($attendanceLog);
+            $manager = getBranchManagerInfo($attendanceLog);
             Mail::to($manager->user->email)->send(new AttendanceMail($attendanceLog));
             return $this->successReponseWithData('You have checked-in successfully!', $attendanceLog);
         } catch (\Exception $e) {
@@ -96,7 +96,7 @@ class AttendanceLogController extends Controller
             DB::beginTransaction();
             $attendanceLog = $this->attendanceLogService->checkOut($employee);
             DB::commit();
-            $manager = getManagerInfo($attendanceLog);
+            $manager = getBranchManagerInfo($attendanceLog);
             Mail::to($manager->user->email)->send(new AttendanceMail($attendanceLog));
             return $this->successReponseWithData('You have checked-out successfully!', $attendanceLog);
         } catch (\Exception $e) {
@@ -125,46 +125,6 @@ class AttendanceLogController extends Controller
     public function edit(AttendanceLog $attendanceLog)
     {
         //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\AttendanceLog  $attendanceLog
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, AttendanceLog $attendanceLog)
-    {
-        try {
-            $validate = $this->attendanceLogService->storeValidation($request);
-
-            if ($validate->fails()) {
-                return response()->json([
-                    'error' => [
-                        'message' => 'Validation errors!',
-                        'errors' => $validate->errors()
-                    ]
-                ]);
-            }
-
-            DB::beginTransaction();
-            $employee = $this->attendanceLogService->updateData($request, $employee);
-            DB::commit();
-            return response()->json([
-                'success' => [
-                    'message' => 'Employee Updated Successfully!',
-                    'data' => $employee
-                ]
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'error' => [
-                    'message' => 'Something went wrong!',
-                ]
-            ]);;
-        }
     }
 
     /**

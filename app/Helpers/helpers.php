@@ -10,7 +10,7 @@ function getEmployeeByUser()
     return $employee[0];
 }
 
-function getManagerInfo($employee)
+function getBranchManagerInfo($employee)
 {
     $manager = Employee::where('branch_id', $employee->branch_id)->get();
     return $manager[0];
