@@ -113,7 +113,7 @@ class AttendanceLogController extends Controller
      */
     public function show(AttendanceLog $attendanceLog)
     {
-        //
+        return  new AttentanceLogResource($attendanceLog);
     }
 
     /**
