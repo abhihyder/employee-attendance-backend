@@ -42,30 +42,16 @@ class EmployeeController extends Controller
             $validate = $this->employeeService->storeValidation($request);
 
             if ($validate->fails()) {
-                return response()->json([
-                    'error' => [
-                        'message' => 'Validation errors!',
-                        'errors' => $validate->errors()
-                    ]
-                ]);
+                return $this->errorReponseWithData('Validation errors!', $validate->errors());
             }
 
             DB::beginTransaction();
             $employee = $this->employeeService->storeData($request);
             DB::commit();
-            return response()->json([
-                'success' => [
-                    'message' => 'Employee Created Successfully!',
-                    'data' => $employee
-                ]
-            ]);
+            return $this->errorReponseWithData('Employee Created Successfully!', $employee);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error' => [
-                    'message' => 'Something went wrong!',
-                ]
-            ]);;
+            return $this->errorReponse('Something went wrong!');
         }
     }
 
@@ -94,30 +80,16 @@ class EmployeeController extends Controller
             $validate = $this->employeeService->storeValidation($request);
 
             if ($validate->fails()) {
-                return response()->json([
-                    'error' => [
-                        'message' => 'Validation errors!',
-                        'errors' => $validate->errors()
-                    ]
-                ]);
+                return $this->errorReponseWithData('Validation errors!', $validate->errors());
             }
 
             DB::beginTransaction();
             $employee = $this->employeeService->updateData($request, $employee);
             DB::commit();
-            return response()->json([
-                'success' => [
-                    'message' => 'Employee Updated Successfully!',
-                    'data' => $employee
-                ]
-            ]);
+            return $this->errorReponseWithData('Employee Updated Successfully!', $employee);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'error' => [
-                    'message' => 'Something went wrong!',
-                ]
-            ]);;
+            return $this->errorReponse('Something went wrong!');
         }
     }
 
@@ -130,10 +102,6 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         $employee->delete();
-        return response()->json([
-            'success' => [
-                'message' => 'Employee Deleted Successfully!',
-            ]
-        ]);
+        return $this->successReponse('Employee Deleted Successfully!');
     }
 }

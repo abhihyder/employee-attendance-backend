@@ -20,4 +20,6 @@ Route::group(['middleware' => 'jwt_auth',], function ($router) {
     Route::get('/attendance/{id}', 'AttendanceLogController@show');
     Route::post('/attendance/checkin', 'AttendanceLogController@storeChechIn');
     Route::post('/attendance/checkout', 'AttendanceLogController@storeChechOut');
+    Route::get('/checkin_or_not', 'AttendanceLogController@checkedInOrNot');
+    Route::get('/checkout_or_not', 'AttendanceLogController@checkedOutOrNot');
 });

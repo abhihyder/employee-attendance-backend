@@ -105,6 +105,30 @@ class AttendanceLogController extends Controller
         }
     }
 
+    public function checkedInOrNot()
+    {
+        $employee = getEmployeeByUser();
+        $checkedInOrNot = $this->attendanceLogService->checkedInOrNot($employee);
+
+        if ($checkedInOrNot === true) {
+            return $this->successReponse('yes');
+        } else {
+            return $this->successReponse('no');
+        }
+    }
+
+    public function checkedOutOrNot()
+    {
+        $employee = getEmployeeByUser();
+        $checkedOutOrNot = $this->attendanceLogService->checkedOutOrNot($employee);
+
+        if ($checkedOutOrNot === true) {
+            return $this->successReponse('yes');
+        } else {
+            return $this->successReponse('no');
+        }
+    }
+
     /**
      * Display the specified resource.
      *
