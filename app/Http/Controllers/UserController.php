@@ -20,22 +20,7 @@ class UserController extends Controller
         return  UserResource::collection(User::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function authUser()
-    {
-        if (auth()->check()) {
-            $auth = Auth::user();
-            return  new UserResource($auth);
-        }
-
-        return false;
-    }
-
-    /**
+     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

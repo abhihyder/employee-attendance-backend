@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/auth_user', 'UserController@authUser');
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 
     Route::post('login', 'AuthController@login');
