@@ -1,5 +1,7 @@
 ## About Project
 
+<p>This is a simple "Employee attendance management" project with API.</p>
+
 * An Employee can't check-in before 07:45 am.
 * An Employee can't check-in or check-out twitch in a day.
 * After check-in or check-out an employee, his/her manager will be notify by email.
